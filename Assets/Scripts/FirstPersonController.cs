@@ -33,6 +33,7 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.fieldOfView = normalFOV; // Ustawienie pocz¹tkowego pola widzenia
     }
 
+
     void Update()
     {
         #region Handles Movement
@@ -46,6 +47,7 @@ public class FirstPersonController : MonoBehaviour
         float movementDirectionY = moveDirection.y;
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
         #endregion
+
 
         #region Handles Jumping
         if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
