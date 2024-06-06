@@ -10,6 +10,11 @@ public class EnemyHP_EnemyDeath : MonoBehaviour
     private Animator animator;
     public bool isDead = false;
 
+    [Header("Points")]
+    public int pointsForHeadshot = 250;
+    public int pointsForBodyshot = 100;
+    public int pointsForLimbshot = 150;
+
     void Start()
     {
         currentHealth = maxHealth;

@@ -8,6 +8,7 @@ public class EnemyBehaviour : MonoBehaviour
     public float patrolRadius = 10f;
     public float patrolTime = 5f;
     public float chaseRadius = 15f;
+    public float damageAmount = 10f; // Add this line
     public LayerMask safeZoneMask;
     public LayerMask playerMask;
     public Transform player;
@@ -22,16 +23,16 @@ public class EnemyBehaviour : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-        enemyDeathScript = GetComponent<EnemyHP_EnemyDeath>(); // Add this line
+        enemyDeathScript = GetComponent<EnemyHP_EnemyDeath>();
         timer = patrolTime;
         isChasingPlayer = false;
     }
 
     void Update()
     {
-        if (enemyDeathScript != null && enemyDeathScript.isDead) // Check if enemy is dead
+        if (enemyDeathScript != null && enemyDeathScript.isDead)
         {
-            agent.enabled = false; // Disable NavMeshAgent if enemy is dead
+            agent.enabled = false;
             return;
         }
 
@@ -121,6 +122,14 @@ public class EnemyBehaviour : MonoBehaviour
         {
             Vector3 newPos = GetRandomPatrolPosition();
             agent.SetDestination(newPos);
+        }
+        else if (other.CompareTag("Player")) // Add this block
+        {
+            PlayerHP_PlayerDeath playerHealth = other.GetComponent<PlayerHP_PlayerDeath>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damageAmount);
+            }
         }
     }
 }
