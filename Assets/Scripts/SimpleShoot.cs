@@ -22,7 +22,9 @@ public class SimpleShoot : MonoBehaviour
     [Tooltip("Damage dealt by the gun")][SerializeField] private float damage = 100f;
     [Tooltip("Maximum distance for the gun to be effective")][SerializeField] private float range = 100f;
     [Tooltip("Layer mask to filter what the gun can hit")][SerializeField] private LayerMask hitLayers;
+    [Tooltip("Maximum number of bullets allowed in the scene")][SerializeField] private int maxBullets = 10;
 
+    private Queue<GameObject> bulletPool;
     private Camera fpsCamera;
     private ScoreManager scoreManager;
 
@@ -36,6 +38,15 @@ public class SimpleShoot : MonoBehaviour
 
         if (gunAnimator == null)
             gunAnimator = GetComponentInChildren<Animator>();
+
+        // Initialize bullet pool
+        bulletPool = new Queue<GameObject>();
+        for (int i = 0; i < maxBullets; i++)
+        {
+            GameObject bullet = Instantiate(bulletPrefab);
+            bullet.SetActive(false);
+            bulletPool.Enqueue(bullet);
+        }
     }
 
     void Update()
@@ -64,10 +75,17 @@ public class SimpleShoot : MonoBehaviour
         if (!bulletPrefab)
             return;
 
-        // Create a bullet and add force on it in direction of the barrel
-        Rigidbody bulletRb = Instantiate(bulletPrefab, barrelLocation.position, barrelLocation.rotation).GetComponent<Rigidbody>();
+        // Reuse a bullet from the pool
+        GameObject bullet = bulletPool.Dequeue();
+        bullet.transform.position = barrelLocation.position;
+        bullet.transform.rotation = barrelLocation.rotation;
+        bullet.SetActive(true);
+
+        Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
         {
+            bulletRb.velocity = Vector3.zero; // Reset velocity
+            bulletRb.angularVelocity = Vector3.zero; // Reset angular velocity
             bulletRb.AddForce(barrelLocation.forward * shotPower);
         }
         else
@@ -90,20 +108,25 @@ public class SimpleShoot : MonoBehaviour
 
                 switch (hitPart)
                 {
-                    case "EnemyHad":
+                    case "EnemyHead":
                         points = target.pointsForHeadshot;
+                        Debug.Log("Headshot");
                         break;
                     case "EnemyBody":
                         points = target.pointsForBodyshot;
+                        Debug.Log("Body");
                         break;
                     case "EnemyArm":
                         points = target.pointsForLimbshot;
+                        Debug.Log("Limb");
                         break;
                     case "EnemyLeg":
                         points = target.pointsForLimbshot;
+                        Debug.Log("LimbLeg");
                         break;
                     default:
-                        points = target.pointsForBodyshot; // Default to body points if no specific tag is found
+                        points = target.pointsForBodyshot;
+                        Debug.Log("LOL");// Default to body points if no specific tag is found
                         break;
                 }
 
@@ -113,6 +136,16 @@ public class SimpleShoot : MonoBehaviour
                 }
             }
         }
+
+        // Deactivate the bullet after a delay and add it back to the pool
+        StartCoroutine(DeactivateBulletAfterTime(bullet, destroyTimer));
+    }
+
+    private IEnumerator DeactivateBulletAfterTime(GameObject bullet, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        bullet.SetActive(false);
+        bulletPool.Enqueue(bullet);
     }
 
     // This function creates a casing at the ejection slot

@@ -11,6 +11,7 @@ public class EnemySpawner : MonoBehaviour
     public int initialEnemyCount = 3;
     public int minEnemyCount = 1; // Minimalna liczba przeciwników
     public int spawnIncrement = 2; // O ile zwiêkszaæ liczbê przeciwników za ka¿dym razem
+    public float minDistanceBetweenEnemies = 5f; // Minimal distance between enemies
 
     public List<GameObject> enemies = new List<GameObject>();
     public Transform player;
@@ -29,7 +30,7 @@ public class EnemySpawner : MonoBehaviour
         {
             Vector3 spawnPosition = GetRandomSpawnPosition();
 
-            if (!IsInSafeZone(spawnPosition))
+            if (!IsInSafeZone(spawnPosition) && !IsTooCloseToOtherEnemies(spawnPosition))
             {
                 // Get player's height
                 float playerHeight = player.position.y;
@@ -66,5 +67,17 @@ public class EnemySpawner : MonoBehaviour
     {
         Collider[] colliders = Physics.OverlapSphere(position, 1f, safeZoneMask);
         return colliders.Length > 0;
+    }
+
+    private bool IsTooCloseToOtherEnemies(Vector3 position)
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            if (Vector3.Distance(position, enemy.transform.position) < minDistanceBetweenEnemies)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
