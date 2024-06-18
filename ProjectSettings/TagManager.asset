@@ -9,6 +9,7 @@ TagManager:
   - EnemyHad
   - EnemyArm
   - EnemyLeg
+  - Enemy
   layers:
   - Default
   - TransparentFX

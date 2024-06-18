@@ -6,6 +6,7 @@ public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public LayerMask safeZoneMask;
+    public LayerMask groundLayerMask; // Add a layer mask for the ground
     public float spawnRadius = 20f;
     public float minDistanceFromPlayer = 10f;
     public int initialEnemyCount = 3;
@@ -32,13 +33,15 @@ public class EnemySpawner : MonoBehaviour
 
             if (!IsInSafeZone(spawnPosition) && !IsTooCloseToOtherEnemies(spawnPosition))
             {
-                // Get player's height
-                float playerHeight = player.position.y;
-
-                // Set spawn position with player's height
-                spawnPosition.y = playerHeight;
+                // Adjust spawn position to ground height
+                spawnPosition = AdjustToGroundHeight(spawnPosition);
 
                 GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+                Enemy enemyComponent = newEnemy.GetComponent<Enemy>();
+                if (enemyComponent != null)
+                {
+                    enemyComponent.OnEnemyDestroyed += HandleEnemyDestroyed;
+                }
                 enemies.Add(newEnemy);
 
                 // Increase minEnemyCount if enemies count is below minEnemyCount
@@ -63,6 +66,20 @@ public class EnemySpawner : MonoBehaviour
         return randomDirection;
     }
 
+    private Vector3 AdjustToGroundHeight(Vector3 position)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(position + Vector3.up * 50, Vector3.down, out hit, 100f, groundLayerMask))
+        {
+            position.y = hit.point.y;
+        }
+        else
+        {
+            position.y = player.position.y; // Fallback to player's height if ground not found
+        }
+        return position;
+    }
+
     private bool IsInSafeZone(Vector3 position)
     {
         Collider[] colliders = Physics.OverlapSphere(position, 1f, safeZoneMask);
@@ -79,5 +96,11 @@ public class EnemySpawner : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private void HandleEnemyDestroyed(Enemy enemy)
+    {
+        enemies.Remove(enemy.gameObject);
+        minEnemyCount -= spawnIncrement; // Decrease minEnemyCount if necessary
     }
 }

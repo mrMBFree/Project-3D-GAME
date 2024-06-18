@@ -18,12 +18,16 @@ public class FirstPersonController : MonoBehaviour
     public float normalFOV = 60f; // Normalne pole widzenia
     public float zoomSpeed = 5f; // Prêdkoœæ przechodzenia miêdzy przybli¿eniem a normalnym widokiem
 
-    Vector3 moveDirection = Vector3.zero;
-    float rotationX = 0;
+    public AudioSource audioSource; // AudioSource dodany do postaci
+    public AudioClip[] footstepSounds; // Tablica z dŸwiêkami kroków
+    public float stepInterval = 0.5f; // Czas miêdzy krokami
 
-    public bool canMove = true;
+    private Vector3 moveDirection = Vector3.zero;
+    private float rotationX = 0;
+    private bool canMove = true;
+    private float nextStepTime = 0f;
 
-    CharacterController characterController;
+    private CharacterController characterController;
 
     void Start()
     {
@@ -32,7 +36,6 @@ public class FirstPersonController : MonoBehaviour
         Cursor.visible = false;
         playerCamera.fieldOfView = normalFOV; // Ustawienie pocz¹tkowego pola widzenia
     }
-
 
     void Update()
     {
@@ -48,6 +51,16 @@ public class FirstPersonController : MonoBehaviour
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
         #endregion
 
+        #region Handles Footstep Sounds
+        if (characterController.isGrounded && (curSpeedX != 0 || curSpeedY != 0))
+        {
+            if (Time.time >= nextStepTime)
+            {
+                PlayFootstepSound();
+                nextStepTime = Time.time + stepInterval;
+            }
+        }
+        #endregion
 
         #region Handles Jumping
         if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
@@ -87,5 +100,15 @@ public class FirstPersonController : MonoBehaviour
             playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, normalFOV, zoomSpeed * Time.deltaTime);
         }
         #endregion
+    }
+
+    void PlayFootstepSound()
+    {
+        if (footstepSounds.Length > 0)
+        {
+            int index = Random.Range(0, footstepSounds.Length);
+            audioSource.clip = footstepSounds[index];
+            audioSource.Play();
+        }
     }
 }
