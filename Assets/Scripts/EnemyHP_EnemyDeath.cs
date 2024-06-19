@@ -7,13 +7,14 @@ public class EnemyHP_EnemyDeath : MonoBehaviour
     [Tooltip("Maximum health of the enemy")]
     [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
-    private Animator animator;
     public bool isDead = false;
-
-    [Header("Points")]
     public int pointsForHeadshot = 250;
     public int pointsForBodyshot = 100;
     public int pointsForLimbshot = 150;
+
+    private float health;
+
+    private Animator animator;
 
     void Start()
     {

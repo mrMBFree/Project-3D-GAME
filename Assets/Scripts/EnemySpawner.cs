@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public LayerMask safeZoneMask;
-    public LayerMask groundLayerMask; // Add a layer mask for the ground
+    public LayerMask groundLayerMask;
     public float spawnRadius = 20f;
     public float minDistanceFromPlayer = 10f;
     public int initialEnemyCount = 3;
-    public int minEnemyCount = 1; // Minimalna liczba przeciwników
-    public int spawnIncrement = 2; // O ile zwiêkszaæ liczbê przeciwników za ka¿dym razem
-    public float minDistanceBetweenEnemies = 5f; // Minimal distance between enemies
+    public int minEnemyCount = 1;
+    public int spawnIncrement = 2;
+    public float minDistanceBetweenEnemies = 5f;
+
+    // Parameters for stronger enemies
+    public int increasedHealth = 20;
+    public float increasedDamage = 5f;
+    public float increasedChaseRadius = 5f;
 
     public List<GameObject> enemies = new List<GameObject>();
     public Transform player;
@@ -33,19 +39,32 @@ public class EnemySpawner : MonoBehaviour
 
             if (!IsInSafeZone(spawnPosition) && !IsTooCloseToOtherEnemies(spawnPosition))
             {
-                // Adjust spawn position to ground height
                 spawnPosition = AdjustToGroundHeight(spawnPosition);
 
-                GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-                Enemy enemyComponent = newEnemy.GetComponent<Enemy>();
-                if (enemyComponent != null)
+                // Ensure spawn position is on NavMesh
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(spawnPosition, out hit, 5f, NavMesh.AllAreas))
                 {
-                    enemyComponent.OnEnemyDestroyed += HandleEnemyDestroyed;
-                }
-                enemies.Add(newEnemy);
+                    spawnPosition = hit.position;
 
-                // Increase minEnemyCount if enemies count is below minEnemyCount
-                minEnemyCount += spawnIncrement;
+                    GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+                    EnemyBehaviour enemyBehaviour = newEnemy.GetComponent<EnemyBehaviour>();
+                    if (enemyBehaviour != null)
+                    {
+                        // Adjust enemy parameters
+                        enemyBehaviour.player = player;
+                        enemyBehaviour.health += increasedHealth;
+                        enemyBehaviour.damageAmount += increasedDamage;
+                        enemyBehaviour.chaseRadius += increasedChaseRadius;
+                    }
+                    enemies.Add(newEnemy);
+
+                    minEnemyCount += spawnIncrement;
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to find valid position on NavMesh for enemy spawn.");
+                }
             }
         }
     }
@@ -75,7 +94,7 @@ public class EnemySpawner : MonoBehaviour
         }
         else
         {
-            position.y = player.position.y; // Fallback to player's height if ground not found
+            position.y = player.position.y;
         }
         return position;
     }
@@ -90,17 +109,13 @@ public class EnemySpawner : MonoBehaviour
     {
         foreach (GameObject enemy in enemies)
         {
+            if (enemy == null) continue;
+
             if (Vector3.Distance(position, enemy.transform.position) < minDistanceBetweenEnemies)
             {
                 return true;
             }
         }
         return false;
-    }
-
-    private void HandleEnemyDestroyed(Enemy enemy)
-    {
-        enemies.Remove(enemy.gameObject);
-        minEnemyCount -= spawnIncrement; // Decrease minEnemyCount if necessary
     }
 }

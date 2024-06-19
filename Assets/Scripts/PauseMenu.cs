@@ -46,7 +46,7 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None; 
         Cursor.visible = true; 
     }
-    public void ShowOptions()
+   /* public void ShowOptions()
     {
         optionsMenuUI.SetActive(true);
     }
@@ -55,7 +55,7 @@ public class PauseMenu : MonoBehaviour
     {
         optionsMenuUI.SetActive(false);
     }
-
+   */
  
     public void LoadMainMenu()
     {
