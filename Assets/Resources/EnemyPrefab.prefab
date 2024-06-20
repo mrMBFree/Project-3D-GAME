@@ -2053,7 +2053,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53383470cb00a649bf84c3c6820047c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 200
+  maxHealth: 50
   isDead: 0
   pointsForHeadshot: 250
   pointsForBodyshot: 100
