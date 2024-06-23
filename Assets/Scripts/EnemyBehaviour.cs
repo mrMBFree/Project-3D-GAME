@@ -14,8 +14,7 @@ public class EnemyBehaviour : MonoBehaviour
     public LayerMask playerMask;
     public Transform player;
 
-    // Health and other parameters
-    public float health = 100f; // Initial health
+    public float health = 100f; 
     private float maxHealth;
     private NavMeshAgent agent;
     private float timer;
@@ -24,18 +23,17 @@ public class EnemyBehaviour : MonoBehaviour
     private Animator animator;
     private PlayerHP_PlayerDeath playerHealthScript;
 
-    // Footstep sound parameters
-    public AudioSource audioSource; // AudioSource dodany do wroga
-    public AudioClip[] footstepSounds; // Tablica z dŸwiêkami kroków
-    public float stepInterval = 0.5f; // Czas miêdzy krokami
+    public AudioSource audioSource; 
+    public AudioClip[] footstepSounds; 
+    public float stepInterval = 0.5f; 
     private float nextStepTime = 0f;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-        playerHealthScript = FindObjectOfType<PlayerHP_PlayerDeath>(); // Find the player's health script
-        maxHealth = health; // Set maxHealth to initial health value
+        playerHealthScript = FindObjectOfType<PlayerHP_PlayerDeath>();
+        maxHealth = health; 
         timer = patrolTime;
         isChasingPlayer = false;
         isDying = false;
@@ -166,18 +164,18 @@ public class EnemyBehaviour : MonoBehaviour
         }
         else if (other.CompareTag("Player"))
         {
-            // Apply push force using CharacterController.Move
+            
             CharacterController characterController = other.GetComponent<CharacterController>();
             if (characterController != null)
             {
                 Vector3 pushDirection = (other.transform.position - transform.position).normalized;
-                pushDirection.y = 0; // Ensure push is only horizontal
+                pushDirection.y = 0; 
                 Vector3 pushBackVector = pushDirection * pushBackForce;
 
-                // Apply the push force to move the player
+                
                 characterController.Move(pushBackVector);
 
-                // Damage the player
+                
                 if (playerHealthScript != null)
                 {
                     playerHealthScript.TakeDamage(damageAmount);
@@ -186,7 +184,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    // Method to take damage
+    
     public void TakeDamage(float amount)
     {
         if (isDying)
@@ -202,16 +200,16 @@ public class EnemyBehaviour : MonoBehaviour
     void Die()
     {
         isDying = true;
-        animator.SetTrigger("Die"); // Assumes there's a "Die" trigger in the animator
-        agent.speed = 0; // Set speed to 0
-        agent.isStopped = true; // Stop the agent
-        GetComponent<Collider>().enabled = false; // Disable the collider
+        animator.SetTrigger("Die");
+        agent.speed = 0; 
+        agent.isStopped = true; 
+        GetComponent<Collider>().enabled = false; 
         StartCoroutine(HandleDeath());
     }
 
     private IEnumerator HandleDeath()
     {
-        yield return new WaitForSeconds(2f); // Adjust the wait time to match the death animation duration
+        yield return new WaitForSeconds(2f); 
         Destroy(gameObject);
     }
 }

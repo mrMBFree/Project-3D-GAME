@@ -15,7 +15,7 @@ public class EnemySpawner : MonoBehaviour
     public int spawnIncrement = 2;
     public float minDistanceBetweenEnemies = 5f;
 
-    // Parameters for stronger enemies
+   
     public int increasedHealth = 20;
     public float increasedDamage = 5f;
     public float increasedChaseRadius = 5f;
@@ -27,8 +27,8 @@ public class EnemySpawner : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // Start spawning enemies using InvokeRepeating
-        InvokeRepeating("SpawnNewEnemy", 2.0f, 5.0f); // Start after 2 seconds and repeat every 5 seconds
+        
+        InvokeRepeating("SpawnNewEnemy", 2.0f, 5.0f); 
     }
 
     private void SpawnNewEnemy()
@@ -41,7 +41,7 @@ public class EnemySpawner : MonoBehaviour
             {
                 spawnPosition = AdjustToGroundHeight(spawnPosition);
 
-                // Ensure spawn position is on NavMesh
+                
                 NavMeshHit hit;
                 if (NavMesh.SamplePosition(spawnPosition, out hit, 5f, NavMesh.AllAreas))
                 {
@@ -51,7 +51,7 @@ public class EnemySpawner : MonoBehaviour
                     EnemyBehaviour enemyBehaviour = newEnemy.GetComponent<EnemyBehaviour>();
                     if (enemyBehaviour != null)
                     {
-                        // Adjust enemy parameters
+                       
                         enemyBehaviour.player = player;
                         enemyBehaviour.health += increasedHealth;
                         enemyBehaviour.damageAmount += increasedDamage;

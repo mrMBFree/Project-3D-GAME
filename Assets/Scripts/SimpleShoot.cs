@@ -39,7 +39,7 @@ public class SimpleShoot : MonoBehaviour
         if (gunAnimator == null)
             gunAnimator = GetComponentInChildren<Animator>();
 
-        // Initialize bullet pool
+        
         bulletPool = new Queue<GameObject>();
         for (int i = 0; i < maxBullets; i++)
         {
@@ -51,31 +51,31 @@ public class SimpleShoot : MonoBehaviour
 
     void Update()
     {
-        // If you want a different input, change it here
+        
         if (Input.GetButtonDown("Fire1"))
         {
-            // Calls animation on the gun that has the relevant animation events that will fire
+            
             gunAnimator.SetTrigger("Fire");
         }
     }
 
-    // This function creates the bullet behavior
+    
     void Shoot()
     {
         if (muzzleFlashPrefab)
         {
-            // Create the muzzle flash
+            
             GameObject tempFlash = Instantiate(muzzleFlashPrefab, barrelLocation.position, barrelLocation.rotation);
 
-            // Destroy the muzzle flash effect
+            
             Destroy(tempFlash, destroyTimer);
         }
 
-        // Cancels if there's no bullet prefab
+        
         if (!bulletPrefab)
             return;
 
-        // Reuse a bullet from the pool
+        
         GameObject bullet = bulletPool.Dequeue();
         bullet.transform.position = barrelLocation.position;
         bullet.transform.rotation = barrelLocation.rotation;
@@ -84,8 +84,8 @@ public class SimpleShoot : MonoBehaviour
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
         {
-            bulletRb.velocity = Vector3.zero; // Reset velocity
-            bulletRb.angularVelocity = Vector3.zero; // Reset angular velocity
+            bulletRb.velocity = Vector3.zero; 
+            bulletRb.angularVelocity = Vector3.zero; 
             bulletRb.AddForce(barrelLocation.forward * shotPower);
         }
         else
@@ -93,7 +93,7 @@ public class SimpleShoot : MonoBehaviour
             Debug.LogWarning("Bullet prefab does not have a Rigidbody component.");
         }
 
-        // Handle bullet hit detection and damage
+        
         RaycastHit hit;
         if (Physics.Raycast(fpsCamera.transform.position, fpsCamera.transform.forward, out hit, range, hitLayers))
         {
@@ -102,7 +102,7 @@ public class SimpleShoot : MonoBehaviour
             {
                 target.TakeDamage(damage);
 
-                // Assign points based on hit location
+                
                 string hitPart = hit.collider.tag;
                 int points = 0;
 
@@ -126,7 +126,7 @@ public class SimpleShoot : MonoBehaviour
                         break;
                     default:
                         points = target.pointsForBodyshot;
-                        Debug.Log("LOL");// Default to body points if no specific tag is found
+                        Debug.Log("LOL");
                         break;
                 }
 
@@ -137,7 +137,7 @@ public class SimpleShoot : MonoBehaviour
             }
         }
 
-        // Deactivate the bullet after a delay and add it back to the pool
+        
         StartCoroutine(DeactivateBulletAfterTime(bullet, destroyTimer));
     }
 
@@ -148,17 +148,17 @@ public class SimpleShoot : MonoBehaviour
         bulletPool.Enqueue(bullet);
     }
 
-    // This function creates a casing at the ejection slot
+    
     void CasingRelease()
     {
-        // Cancels function if ejection slot hasn't been set or there's no casing
+        
         if (!casingExitLocation || !casingPrefab)
             return;
 
-        // Create the casing
+        
         GameObject tempCasing = Instantiate(casingPrefab, casingExitLocation.position, casingExitLocation.rotation);
 
-        // Add force on casing to push it out
+        
         Rigidbody casingRb = tempCasing.GetComponent<Rigidbody>();
         if (casingRb != null)
         {
@@ -166,10 +166,10 @@ public class SimpleShoot : MonoBehaviour
                                        casingExitLocation.position - casingExitLocation.right * 0.3f - casingExitLocation.up * 0.6f,
                                        1f);
 
-            // Add torque to make casing spin in random direction
+            
             casingRb.AddTorque(new Vector3(0, Random.Range(100f, 500f), Random.Range(100f, 1000f)), ForceMode.Impulse);
 
-            // Destroy casing after X seconds
+            
             Destroy(tempCasing, destroyTimer);
         }
         else

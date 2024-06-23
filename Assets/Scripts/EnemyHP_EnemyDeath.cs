@@ -51,13 +51,13 @@ public class EnemyHP_EnemyDeath : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Optionally, destroy the enemy after the death animation has played
+       
         StartCoroutine(DestroyAfterAnimation());
     }
 
     private IEnumerator DestroyAfterAnimation()
     {
-        // Assuming the death animation length is 2 seconds. Adjust according to your animation length.
+      
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
     }

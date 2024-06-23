@@ -35,10 +35,10 @@
             }
         }
 
-        // Call this method to destroy the enemy
+      
         public void Kill()
         {
-            // Perform any necessary cleanup before destruction
+            
             Destroy(gameObject);
         }
     }

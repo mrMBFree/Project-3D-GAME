@@ -14,13 +14,13 @@ public class FirstPersonController : MonoBehaviour
     public float lookSpeed = 2f;
     public float lookXLimit = 45f;
 
-    public float zoomFOV = 30f; // Pole widzenia przy przybli¿eniu
-    public float normalFOV = 60f; // Normalne pole widzenia
-    public float zoomSpeed = 5f; // Prêdkoœæ przechodzenia miêdzy przybli¿eniem a normalnym widokiem
+    public float zoomFOV = 30f; 
+    public float normalFOV = 60f; 
+    public float zoomSpeed = 5f; 
 
-    public AudioSource audioSource; // AudioSource dodany do postaci
-    public AudioClip[] footstepSounds; // Tablica z dŸwiêkami kroków
-    public float stepInterval = 0.5f; // Czas miêdzy krokami
+    public AudioSource audioSource; 
+    public AudioClip[] footstepSounds; 
+    public float stepInterval = 0.5f; 
 
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0;
@@ -34,7 +34,7 @@ public class FirstPersonController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        playerCamera.fieldOfView = normalFOV; // Ustawienie pocz¹tkowego pola widzenia
+        playerCamera.fieldOfView = normalFOV; 
     }
 
     void Update()
@@ -43,7 +43,7 @@ public class FirstPersonController : MonoBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        // Press Left Shift to run
+        
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
         float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
         float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
@@ -91,7 +91,7 @@ public class FirstPersonController : MonoBehaviour
         #endregion
 
         #region Handles Zoom
-        if (Input.GetMouseButton(1)) // Prawy przycisk myszy
+        if (Input.GetMouseButton(1)) 
         {
             playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, zoomFOV, zoomSpeed * Time.deltaTime);
         }

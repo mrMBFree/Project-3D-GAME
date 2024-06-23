@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // For loading scenes
+using UnityEngine.SceneManagement; 
 using UnityEngine.UI;
-using TMPro;// For UI elements
+using TMPro;
 
 public class PlayerHP_PlayerDeath : MonoBehaviour
 {
     public float maxHealth = 100f;
     public float health = 100f;
-    public int extraLives = 3; // Green hearts
+    public int extraLives = 3; 
 
     public TMP_Text healthText;
     public TMP_Text extraLivesText;
@@ -59,7 +59,7 @@ public class PlayerHP_PlayerDeath : MonoBehaviour
 
     void Die()
     {
-        // Handle player death
+        
         Debug.Log("Player died! Returning to main menu...");
         SceneManager.LoadScene("MainMenu");
     }
